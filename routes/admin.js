@@ -1,113 +1,91 @@
 import express from "express";
-import AdminJSExpress from "@adminjs/express";
-import AdminJSMongoose from "@adminjs/mongoose";
 import bcrypt from "bcryptjs";
-import nodemailer from "nodemailer";
 import User from "../models/user.js";
 import Product from "../models/product.js";
 import Order from "../models/order.js";
 import Project from "../models/project.js";
 import CustomProjectRequest from "../models/custom-project-request.js";
-import dotenv from "dotenv";
-dotenv.config();
 
 const router = express.Router();
 
-// Register the mongoose adapter
-AdminJS.registerAdapter(AdminJSMongoose);
-
-// Create reusable transporter object
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.GMAIL_EMAIL,
-    pass: process.env.GMAIL_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
-
-// Create admin instance with custom configuration
-const admin = new AdminJS({
-  resources: [
-    {
-      resource: User,
-      options: {
-        properties: {
-          password: {
-            isVisible: {
-              list: false,
-              edit: true,
-              filter: false,
-              show: false,
-            },
-          },
-        },
-        actions: {
-          new: {
-            before: async (request) => {
-              if (request.payload.password) {
-                request.payload = {
-                  ...request.payload,
-                  password: await bcrypt.hash(request.payload.password, 10),
-                };
-              }
-              return request;
-            },
-          },
-        },
-      },
-    },
-    Product,
-    Order,
-    Project,
-    CustomProjectRequest,
-  ],
-  branding: {
-    companyName: "ElectroHub Admin",
-    logo: false,
-  },
-  locale: {
-    language: "en",
-    translations: {
-      labels: {
-        User: "Users",
-        Product: "Products",
-        Order: "Orders",
-        Project: "Projects",
-        CustomProjectRequest: "Custom Project Requests",
-      },
-    },
-  },
-});
-
-// Create router with authentication
-const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
-  admin,
-  {
-    authenticate: async (email, password) => {
-      const user = await User.findOne({ email });
-      if (user && user.isAdmin) {
-        const matched = await bcrypt.compare(password, user.password);
-        if (matched) {
-          return user;
-        }
-      }
-      return false;
-    },
-    cookiePassword: process.env.ADMIN_COOKIE_SECRET || "default-secret",
-  },
-  null,
-  {
-    resave: false,
-    saveUninitialized: true,
+// Middleware to check if user is admin
+const isAdmin = async (req, res, next) => {
+  if (req.isAuthenticated() && req.user.isAdmin) {
+    return next();
   }
-);
+  res.redirect('/user/login');
+};
 
-// Mount admin routes
-router.use(admin.options.rootPath, adminRouter);
+// Admin dashboard
+router.get('/', isAdmin, async (req, res) => {
+  try {
+    const stats = {
+      users: await User.countDocuments(),
+      products: await Product.countDocuments(),
+      orders: await Order.countDocuments(),
+      projects: await Project.countDocuments(),
+      requests: await CustomProjectRequest.countDocuments()
+    };
+    res.render('admin/dashboard', { stats });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', { error });
+  }
+});
+
+// Users management
+router.get('/users', isAdmin, async (req, res) => {
+  try {
+    const users = await User.find().sort('-createdAt');
+    res.render('admin/users', { users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', { error });
+  }
+});
+
+// Products management
+router.get('/products', isAdmin, async (req, res) => {
+  try {
+    const products = await Product.find().sort('-createdAt');
+    res.render('admin/products', { products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', { error });
+  }
+});
+
+// Orders management
+router.get('/orders', isAdmin, async (req, res) => {
+  try {
+    const orders = await Order.find().sort('-createdAt');
+    res.render('admin/orders', { orders });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', { error });
+  }
+});
+
+// Projects management
+router.get('/projects', isAdmin, async (req, res) => {
+  try {
+    const projects = await Project.find().sort('-createdAt');
+    res.render('admin/projects', { projects });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', { error });
+  }
+});
+
+// Custom project requests management
+router.get('/requests', isAdmin, async (req, res) => {
+  try {
+    const requests = await CustomProjectRequest.find().sort('-createdAt');
+    res.render('admin/requests', { requests });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', { error });
+  }
+});
 
 export default router;

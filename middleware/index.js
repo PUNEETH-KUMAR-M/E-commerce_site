@@ -1,18 +1,18 @@
-let middlewareObject = {};
+const middlewareObject = {
+  // a middleware to check if a user is logged in or not
+  isNotLoggedIn: (req, res, next) => {
+    if (!req.isAuthenticated()) {
+      return next();
+    }
+    res.redirect("/");
+  },
 
-//a middleware to check if a user is logged in or not
-middlewareObject.isNotLoggedIn = (req, res, next) => {
-  if (!req.isAuthenticated()) {
-    return next();
+  isLoggedIn: (req, res, next) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    res.redirect("/user/signin");
   }
-  res.redirect("/");
 };
 
-middlewareObject.isLoggedIn = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/user/signin");
-};
-
-module.exports = middlewareObject;
+export default middlewareObject;

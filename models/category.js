@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+import slug from "mongoose-slug-updater";
 const Schema = mongoose.Schema;
-const slug = require("mongoose-slug-updater");
 
 mongoose.plugin(slug);
 
@@ -22,4 +22,4 @@ const categorySchema = Schema({
   }
 });
 
-module.exports = mongoose.model("Category", categorySchema);
+export default mongoose.model("Category", categorySchema);

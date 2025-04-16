@@ -1,18 +1,19 @@
-const express = require("express");
-const router = express.Router();
-const csrf = require("csurf");
-var passport = require("passport");
-var LocalStrategy = require("passport-local").Strategy;
-const Product = require("../models/product");
-const Order = require("../models/order");
-const Cart = require("../models/cart");
-const middleware = require("../middleware");
-const {
+import express from "express";
+import csrf from "csurf";
+import passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
+import Product from "../models/product.js";
+import Order from "../models/order.js";
+import Cart from "../models/cart.js";
+import middleware from "../middleware/index.js";
+import {
   userSignUpValidationRules,
   userSignInValidationRules,
   validateSignup,
   validateSignin,
-} = require("../config/validator");
+} from "../config/validator.js";
+
+const router = express.Router();
 const csrfProtection = csrf();
 router.use(csrfProtection);
 
@@ -25,6 +26,7 @@ router.get("/signup", middleware.isNotLoggedIn, (req, res) => {
     pageName: "Sign Up",
   });
 });
+
 // POST: handle the signup logic
 router.post(
   "/signup",
@@ -128,7 +130,7 @@ router.get("/profile", middleware.isLoggedIn, async (req, res) => {
   const errorMsg = req.flash("error")[0];
   try {
     // find all orders of this user
-    allOrders = await Order.find({ user: req.user });
+    const allOrders = await Order.find({ user: req.user });
     res.render("user/profile", {
       orders: allOrders,
       errorMsg,
@@ -153,4 +155,5 @@ router.get("/logout", middleware.isLoggedIn, (req, res) => {
     res.redirect("/");
   });
 });
-module.exports = router;
+
+export default router;

@@ -1,10 +1,11 @@
-const passport = require("passport");
-const express = require("express");
+import passport from "passport";
+import express from "express";
+import Product from "../models/product.js";
+import Category from "../models/category.js";
+import User from "../models/user.js";
+import moment from "moment";
+
 const router = express.Router();
-const Product = require("../models/product");
-const Category = require("../models/category");
-const User = require("../models/user");
-var moment = require("moment");
 
 passport.deserializeUser((id, done) => {
   User.findById(id, (err, user) => {
@@ -207,4 +208,4 @@ router.get("/:slug/:id", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,22 +1,26 @@
-const express = require("express");
-const csrf = require("csurf");
-const Razorpay = require("razorpay");
-const crypto = require("crypto");
-const Product = require("../models/product");
-const Category = require("../models/category");
-const Cart = require("../models/cart");
-const Order = require("../models/order");
-const middleware = require("../middleware");
-const Project = require('../models/project');
-const nodemailer = require('nodemailer');
-const CustomProjectRequest = require('../models/custom-project-request');
+import express from "express";
+import csrf from "csurf";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+import Product from "../models/product.js";
+import Category from "../models/category.js";
+import Cart from "../models/cart.js";
+import Order from "../models/order.js";
+import middleware from "../middleware/index.js";
+import Project from '../models/project.js';
+import nodemailer from 'nodemailer';
+import CustomProjectRequest from '../models/custom-project-request.js';
+
 const router = express.Router();
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+// Initialize Razorpay only if configuration is available
+let razorpay;
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+  razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET
+  });
+}
 
 // CSRF protection
 const csrfProtection = csrf();
@@ -457,4 +461,4 @@ router.post("/custom-projects/submit", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

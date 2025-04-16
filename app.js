@@ -42,11 +42,12 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-      mongoUrl: mongoose.connection._connectionString,
+      mongoUrl: process.env.MONGO_URI || "mongodb://localhost/bags-ecommerce",
+      ttl: 24 * 60 * 60 // = 1 day
     }),
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      secure: false,
+      secure: process.env.NODE_ENV === 'production'
     },
   })
 );

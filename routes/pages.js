@@ -1,11 +1,9 @@
-const express = require("express");
-const csrf = require("csurf");
-const nodemailer = require("nodemailer");
+import express from "express";
+import csrf from "csurf";
+import nodemailer from "nodemailer";
+import { userContactUsValidationRules, validateContactUs } from "../config/validator.js";
+
 const router = express.Router();
-const {
-  userContactUsValidationRules,
-  validateContactUs,
-} = require("../config/validator");
 const csrfProtection = csrf();
 router.use(csrfProtection);
 
@@ -103,4 +101,4 @@ router.post(
   }
 );
 
-module.exports = router;
+export default router;

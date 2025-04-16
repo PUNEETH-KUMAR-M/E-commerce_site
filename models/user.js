@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt-nodejs");
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 const Schema = mongoose.Schema;
 
 const userSchema = Schema({
@@ -15,19 +15,23 @@ const userSchema = Schema({
     type: String,
     require: true,
   },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  }
 });
 
 // encrypt the password before storing
-userSchema.methods.encryptPassword = (password) => {
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(5), null);
+userSchema.methods.encryptPassword = async (password) => {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
 };
 
-userSchema.methods.validPassword = function (candidatePassword) {
+userSchema.methods.validPassword = async function (candidatePassword) {
   if (this.password != null) {
-    return bcrypt.compareSync(candidatePassword, this.password);
-  } else {
-    return false;
+    return await bcrypt.compare(candidatePassword, this.password);
   }
+  return false;
 };
 
-module.exports = mongoose.model("User", userSchema);
+export default mongoose.model("User", userSchema);

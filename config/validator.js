@@ -1,6 +1,6 @@
-const { check, validationResult } = require("express-validator");
+import { check, validationResult } from "express-validator";
 
-const userSignUpValidationRules = () => {
+export const userSignUpValidationRules = () => {
   return [
     check("name", "Name is required").not().isEmpty(),
     check("email", "Invalid email").not().isEmpty().isEmail(),
@@ -11,14 +11,14 @@ const userSignUpValidationRules = () => {
   ];
 };
 
-const userSignInValidationRules = () => {
+export const userSignInValidationRules = () => {
   return [
     check("email", "Invalid email").not().isEmpty().isEmail(),
     check("password", "Invalid password").not().isEmpty().isLength({ min: 4 }),
   ];
 };
 
-const userContactUsValidationRules = () => {
+export const userContactUsValidationRules = () => {
   return [
     check("name", "Please enter a name").not().isEmpty(),
     check("email", "Please enter a valid email address")
@@ -32,7 +32,7 @@ const userContactUsValidationRules = () => {
   ];
 };
 
-const validateSignup = (req, res, next) => {
+export const validateSignup = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     var messages = [];
@@ -45,7 +45,7 @@ const validateSignup = (req, res, next) => {
   next();
 };
 
-const validateSignin = (req, res, next) => {
+export const validateSignin = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     var messages = [];
@@ -58,7 +58,7 @@ const validateSignin = (req, res, next) => {
   next();
 };
 
-const validateContactUs = (req, res, next) => {
+export const validateContactUs = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     var messages = [];
@@ -70,13 +70,4 @@ const validateContactUs = (req, res, next) => {
     return res.redirect("/pages/contact-us");
   }
   next();
-};
-
-module.exports = {
-  userSignUpValidationRules,
-  userSignInValidationRules,
-  userContactUsValidationRules,
-  validateSignup,
-  validateSignin,
-  validateContactUs,
 };

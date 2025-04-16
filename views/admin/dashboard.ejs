@@ -1,0 +1,61 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <h1>Admin Dashboard</h1>
+  
+  <div class="row mt-4">
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Users</h5>
+          <p class="card-text display-4"><%= stats.users %></p>
+          <a href="/admin/users" class="btn btn-primary">Manage Users</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Products</h5>
+          <p class="card-text display-4"><%= stats.products %></p>
+          <a href="/admin/products" class="btn btn-primary">Manage Products</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Orders</h5>
+          <p class="card-text display-4"><%= stats.orders %></p>
+          <a href="/admin/orders" class="btn btn-primary">Manage Orders</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Projects</h5>
+          <p class="card-text display-4"><%= stats.projects %></p>
+          <a href="/admin/projects" class="btn btn-primary">Manage Projects</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Custom Project Requests</h5>
+          <p class="card-text display-4"><%= stats.requests %></p>
+          <a href="/admin/requests" class="btn btn-primary">Manage Requests</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %> 
