@@ -1,136 +1,108 @@
-PNBK FPV store
+TasknTrade E-Commerce Website
+Table of Contents
+Introduction
+Demo
+Run
+Technology
+Features
+Database Models
+Color Palette
+License
+Introduction
+TasknTrade is a virtual e-commerce website built using Node.js, Express.js, and Mongoose. It allows users to browse products, add them to their cart, and complete purchases using Razorpay for payment processing. The application also includes an admin panel for managing users, products, orders, and categories.
 
-## Table of contents
+Note: Please read the Run section before opening an issue.
 
-- [Introduction](#introduction)
-- [Demo](#demo)
-- [Run](#run)
-- [Technology](#technology)
-- [Features](#features)
-- [Database Models](#database)
-- [Color Palette](#colors)
-- [License](#license)
+Demo
+The website simulates a real store where users can add products to their cart and proceed to checkout. Payments are processed using Razorpay.
+Important: Please do not provide real payment information during testing.
 
-## Introduction
+To access the admin panel (/admin), you need to provide the admin email and password.
 
-A virtual ecommerce website using Node js, Express js, and Mongoose.
+Run
+To run this application, you need to set up your own environment variables. These variables are stored in a .env file at the root of the project. Below are the required variables:
 
-NOTE: Please read the RUN section before opening an issue.
+MONGO_URI: Connection string for your MongoDB Atlas database.
+SESSION_SECRET: A secret string for session management.
+RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET: Razorpay API keys for payment processing.
+GMAIL_EMAIL and GMAIL_PASSWORD: Email credentials for Nodemailer to send/receive emails.
+ADMIN_EMAIL and ADMIN_PASSWORD: Credentials for accessing the admin panel.
+ADMIN_COOKIE_NAME and ADMIN_COOKIE_PASSWORD: Cookie name and password for AdminJS authentication.
+Steps to Run:
+Clone the repository and navigate to the project directory.
+Set up the .env file with the above variables.
+Seed the database:
+Navigate to the seedDB folder.
+Run:
+Start the application:
+Technology
+The application is built with the following technologies:
 
-## Demo
+Node.js: Backend runtime environment.
+MongoDB: NoSQL database for storing application data.
+Express.js: Web framework for building the application.
+Bootstrap: Frontend framework for styling.
+FontAwesome: Icon library for UI elements.
+Razorpay API: Payment gateway for checkout.
+Mapbox API: Displays a map on the "About Us" page.
+AdminJS: Admin panel for managing the application.
+Nodemailer: Sends emails from the "Contact Us" form.
+Passport.js: Authentication middleware.
+Express Validator: Validates form inputs.
+Features
+User Features:
+Create an account, log in, or log out.
+Browse available products.
+Add products to the shopping cart.
+View and delete items from the cart.
+Checkout (requires login).
+View order history in the user profile.
+Admin Features:
+Log in or log out of the admin panel.
+Manage database records:
+View, add, edit, or delete users, products, orders, and categories.
+Note: The cart model is not modifiable by admins.
+Database Models
+The application uses the following Mongoose schemas:
 
-The website resembles a real store and you can add products to your cart and pay for them. The payment is processed using Razorpay. Please <u><b>DO NOT</b></u> provide real payment information during testing.
+User Schema:
+username (String)
+email (String)
+password (String)
+Category Schema:
+title (String)
+slug (String)
+Product Schema:
+productCode (String)
+title (String)
+imagePath (String)
+description (String)
+price (Number)
+category (ObjectId - references the Category schema)
+manufacturer (String)
+available (Boolean)
+createdAt (Date)
+Cart Schema:
+items (Array of items)
+totalQty (Number)
+totalCost (Number)
+user (ObjectId - references the User schema)
+Order Schema:
+user (ObjectId - references the User schema)
+cart (Object containing items, totalQty, and totalCost)
+address (String)
+paymentId (String)
+createdAt (Date)
+delivered (Boolean)
+Color Palette
+The application uses the following color palette:
 
-In order to access the admin panel on "/admin" you need to provide the admin email and password.
-
-## Run
-
-To run this application, you have to set your own environmental variables. For security reasons, some variables have been hidden from view and used as environmental variables with the help of dotenv package. Below are the variables that you need to set in order to run the application:
-
-- MONGO_URI: this is the connection string of your MongoDB Atlas database.
-
-- SESSION_SECRET: a secret message for the session. You can use any string here.
-
-- RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET: the Razorpay package is used to process payment in the checkout route. To get these, you should set up a Razorpay account and put your API keys here.
-
-- GMAIL_EMAIL, GMAIL_PASSWORD: the email and password given to nodemailer to send/receive the email. Please put a real email and password here because you will receive the messages sent from the contact us form on this email.
-
-- ADMIN_EMAIL, ADMIN_PASSWORD: the email and password used to log into the admin panel using AdminBro. You can put any email and password here.
-
-- ADMIN_COOKIE_NAME, ADMIN_COOKIE_PASSWORD: the cookie name and password used in the AdminBro authentication method. You can put any strings here.
-
-After you've set these environmental variables in the .env file at the root of the project, you need to navigate to the "seedDB" folder and run "node category-seed.js" and "node products-seed.js" to fill your empty MongoDB Atlas database.
-
-Now you can run "npm start" in the terminal and the application should work.
-
-## Technology
-
-The application is built with:
-
-- Node.js version 12.16.3
-- MongoDB version 4.2.0
-- Express version 4.16.1
-- Bootstrap version 4.4.1
-- FontAwesome version 5.13.0
-- Razorpay API: used for payment in the checkout page
-- Mapbox API: used to show the map in the about us page
-- AdminBro: used and customized to implement the admin panel
-- Nodemailer: used to send emails from the contact us form
-- Passport: used for authentication
-- Express Validator: used for form validation
-
-## Features
-
-The application displays a virtual bags store that contains virtual products and contact information.
-
-Users can do the following:
-
-- Create an account, login or logout
-- Browse available products added by the admin
-- Add products to the shopping cart
-- Delete products from the shopping cart
-- Display the shopping cart
-- To checkout, a user must be logged in
-- Checkout information is processed using Razorpay and the payment is send to the admin
-- The profile contains all the orders a user has made
-
-Admins can do the following:
-
-- Login or logout to the admin panel
-- View all the information stored in the database. They can view/add/edit/delete orders, users, products and categories. The cart model cannot be modified by an admin because a cart is either modified by the logged in user before the purchase or deleted after the purchase.
-
-## Database
-
-All the models can be found in the models directory created using mongoose.
-
-### User Schema:
-
-- username (String)
-- email (String)
-- password (String)
-
-### Category Schema:
-
-- title (String)
-- slug (String)
-
-### Product Schema:
-
-- productCode (String)
-- title (String)
-- imagePath (String)
-- description (String)
-- price (Number)
-- category (ObjectId - a reference to the category schema)
-- manufacturer (String)
-- available (Boolean)
-- createdAt (Date)
-
-### Cart Schema:
-
-- items (Array of items)
-- totalQty (Number)
-- totalCost (Number)
-- user (ObjectId - a reference to the user schema)
-
-### Order Schema:
-
-- user (ObjectId - a reference to the user schema)
-- cart (Object containing items, totalQty, and totalCost)
-- address (String)
-- paymentId (String)
-- createdAt (Date)
-- Delivered (Boolean)
-
-## Colors
-
-The application uses a specific color palette:
-
-- Dark Blue: #1a237e
-- Light Blue: #478ba2
-- Dark Orange: #e9765b
-- Green: #b6e3d4
-- Ivory: #f8f1e9
-- Black: #1a1a1a
-
+Dark Blue: #1a237e
+Light Blue: #478ba2
+Dark Orange: #e9765b
+Green: #b6e3d4
+Ivory: #f8f1e9
+Black: #1a1a1a
+License
+This project is licensed under the MIT License. See the LICENSE file for details.
 
