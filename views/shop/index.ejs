@@ -199,95 +199,38 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const productSearch = document.getElementById('productSearch');
-    const productGrid = document.querySelector('.product-grid');
     const searchForm = document.querySelector('.search-form');
     
-    // Function to perform search
-    function performSearch(searchTerm) {
-      searchTerm = searchTerm.toLowerCase().trim();
-      const productCards = document.querySelectorAll('.product-card');
-      let hasResults = false;
-      
-      // Remove any existing "no results" message
-      const existingNoResults = document.querySelector('.no-results');
-      if (existingNoResults) {
-        existingNoResults.remove();
-      }
-      
-      productCards.forEach(card => {
-        const title = card.querySelector('.product-title').textContent.toLowerCase();
-        const productCode = card.querySelector('.text-muted')?.textContent.toLowerCase() || '';
-        
-        if (title.includes(searchTerm) || productCode.includes(searchTerm)) {
-          card.style.display = 'block';
-          hasResults = true;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-      
-      if (!hasResults) {
-        const noResults = document.createElement('div');
-        noResults.className = 'no-results text-center py-4 w-100';
-        noResults.innerHTML = `
-          <div class="alert alert-info">
-            <i class="fas fa-search mr-2"></i>
-            No products found matching "${searchTerm}"
-            <button class="btn btn-link" onclick="clearSearch()">Clear Search</button>
-          </div>
-        `;
-        productGrid.appendChild(noResults);
-      }
-    }
-    
-    // Function to clear search
-    window.clearSearch = function() {
-      productSearch.value = '';
-      const productCards = document.querySelectorAll('.product-card');
-      productCards.forEach(card => card.style.display = 'block');
-      const noResults = document.querySelector('.no-results');
-      if (noResults) {
-        noResults.remove();
-      }
-    }
-    
-    // Handle sidebar search input
-    let searchTimeout;
-    if (productSearch) {
-      productSearch.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-          performSearch(this.value);
-        }, 300);
-      });
-    }
-    
-    // Handle header search form submit
+    // Handle search form submission
     if (searchForm) {
       searchForm.addEventListener('submit', function(e) {
-        e.preventDefault();
         const searchInput = this.querySelector('input[name="search"]');
-        if (searchInput) {
-          performSearch(searchInput.value);
-          // Update sidebar search input to match
-          if (productSearch) {
-            productSearch.value = searchInput.value;
+        // Only prevent default if the search input is empty or too short
+        if (!searchInput || !searchInput.value.trim() || searchInput.value.trim().length < 2) {
+          e.preventDefault();
+          if (searchInput.value.trim().length < 2) {
+            // Create or update error message
+            let errorMsg = document.querySelector('.search-error');
+            if (!errorMsg) {
+              errorMsg = document.createElement('div');
+              errorMsg.className = 'search-error alert alert-danger mt-2';
+              searchInput.parentNode.appendChild(errorMsg);
+            }
+            errorMsg.textContent = 'Please enter at least 2 characters';
           }
+          return;
         }
+        // Allow the form to submit normally if there's a valid search term
       });
     }
 
-    // Get search forms
-    const searchForms = document.querySelectorAll('.search-form');
-    
-    // Handle form submissions
-    searchForms.forEach(form => {
-      form.addEventListener('submit', function(e) {
-        const searchInput = this.querySelector('input[name="search"]');
-        if (!searchInput.value.trim()) {
-          e.preventDefault();
-          return;
+    // Clear error message when user types
+    const searchInputs = document.querySelectorAll('input[name="search"]');
+    searchInputs.forEach(input => {
+      input.addEventListener('input', function() {
+        const errorMsg = this.parentNode.querySelector('.search-error');
+        if (errorMsg) {
+          errorMsg.remove();
         }
       });
     });

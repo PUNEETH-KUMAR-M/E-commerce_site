@@ -59,13 +59,23 @@ router.get("/search", async (req, res) => {
   const searchTerm = req.query.search || '';
 
   try {
-    const searchQuery = {
+    // Create an array of words from the search term
+    const searchWords = searchTerm.trim().split(/\s+/).filter(word => word.length > 0);
+    
+    // Create search conditions for each word
+    const searchConditions = searchWords.map(word => ({
       $or: [
-        { title: { $regex: searchTerm, $options: "i" } },
-        { description: { $regex: searchTerm, $options: "i" } },
-        { productCode: { $regex: searchTerm, $options: "i" } }
+        { title: { $regex: word, $options: "i" } },
+        { description: { $regex: word, $options: "i" } },
+        { productCode: { $regex: word, $options: "i" } },
+        { "category.title": { $regex: word, $options: "i" } }
       ]
-    };
+    }));
+
+    // Combine conditions with $and to match all words
+    const searchQuery = searchWords.length > 0 
+      ? { $and: searchConditions }
+      : {};
 
     const products = await Product.find(searchQuery)
       .sort("-createdAt")
@@ -77,22 +87,43 @@ router.get("/search", async (req, res) => {
     const categories = await Category.find({}).sort('title');
 
     // Check if the search term matches any category
-    const matchingCategory = categories.find(cat => 
-      cat.title.toLowerCase() === searchTerm.toLowerCase()
+    const matchingCategories = categories.filter(cat => 
+      searchWords.some(word => 
+        cat.title.toLowerCase().includes(word.toLowerCase())
+      )
     );
+
+    // Get products from matching categories as well
+    if (matchingCategories.length > 0) {
+      const categoryIds = matchingCategories.map(cat => cat._id);
+      const categoryProducts = await Product.find({
+        category: { $in: categoryIds }
+      })
+        .sort("-createdAt")
+        .populate("category");
+      
+      // Merge and remove duplicates
+      const allProducts = [...products, ...categoryProducts];
+      const uniqueProducts = Array.from(new Set(allProducts.map(p => p._id.toString())))
+        .map(id => allProducts.find(p => p._id.toString() === id))
+        .slice((page - 1) * perPage, page * perPage);
+
+      products.length = 0;
+      products.push(...uniqueProducts);
+    }
 
     res.render("shop/index", {
       pageName: searchTerm ? `Search: ${searchTerm}` : "All Products",
       products,
       categories,
-      successMsg: products.length > 0 ? `Found ${products.length} products ${searchTerm ? `matching "${searchTerm}"` : ''}` : null,
+      successMsg: products.length > 0 ? `Found ${count} products ${searchTerm ? `matching "${searchTerm}"` : ''}` : null,
       errorMsg: products.length === 0 ? `No products found ${searchTerm ? `matching "${searchTerm}"` : ''}` : null,
       current: page,
       breadcrumbs: null,
-      home: "/products/search?search=" + searchTerm + "&",
+      home: "/products/search?search=" + encodeURIComponent(searchTerm) + "&",
       pages: Math.ceil(count / perPage),
       searchTerm: searchTerm,
-      currentCategory: matchingCategory || null,
+      currentCategory: matchingCategories[0] || null,
       login: req.isAuthenticated(),
       session: req.session
     });

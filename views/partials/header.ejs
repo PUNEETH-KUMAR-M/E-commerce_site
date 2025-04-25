@@ -152,12 +152,28 @@
 
   /* Search Bar */
   .search-bar {
-    max-width: 400px; /* Set a specific width for the search bar */
+    max-width: 200px; /* Decreased the width of the search bar */
     margin: 0 auto; /* Center it within its container */
   }
 
   .search-input {
     width: 100%; /* Ensure the input field takes up the full width of the search bar */
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+  }
+
+  .search-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+  }
+
+  .search-button:hover {
+    background-color: var(--primary-hover-color);
   }
 
   /* Override any conflicting styles */
@@ -208,8 +224,3 @@
       console.log('Welcome banner found and made visible');
     }
   });
-<<<<<<< HEAD
-</script>
-=======
-</script> 
->>>>>>> c35595dc6c8600412be9bbbf4f90f829f0f741f3
